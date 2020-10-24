@@ -52,7 +52,7 @@ server <- function(input, output, session) {
                      this_question(
                          frame_question(Items,
                                     ndistractor = 5,
-                                    forward=TRUE, #NOTE NOTE NOTE
+                                    forward=rnorm(1) > 0, #NOTE NOTE NOTE
                                     k = k))
                      prompt(this_question()$prompt)
                      current_choices(this_question()$choices)
