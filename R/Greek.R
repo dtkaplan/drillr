@@ -42,8 +42,11 @@ Greek <- function() {
     "Xi",  "upper", "$$\\Xi$$",
     "Sigma",  "upper", "$$\\Sigma$$",
     "Psi",  "lower", "$$\\Psi$$",
-  ) %>% mutate(id = "Greek")
+  ) %>% mutate(id = "Greek",
+               forward = "Name the Greek letter",
+               backward = "Choose the letter named")
 }
 
-
+# What kind of thing is this, e.g. function, vector matrix, first derivative with respect
+# to x, 2nd deriv, mixed  partial derivative.
 
