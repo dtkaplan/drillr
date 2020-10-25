@@ -2,5 +2,6 @@
 
 export(Greek)
 export(Polynomials)
+export(format_choices)
 export(frame_question)
 export(make_sequence)

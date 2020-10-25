@@ -3,6 +3,10 @@ library(shiny)
 library(shinyjs)
 library(learnrhash)
 
+quiz_choices <- list()
+quiz_choices[["Greek"]] <- Greek("both")
+quiz_choices[["Derivs of Polynomials"]] <- Polynomials("forward")
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
     useShinyjs(),
@@ -13,22 +17,25 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
+            selectInput("quiz", "Choose quiz:", choices = names(quiz_choices)),
 
-            tags$div(htmlOutput("feedback"), style="font-size:15pt;"),
-            tags$div(uiOutput("right_answer"), style="font-size:15pt;"),
-            tags$hr(),
-            actionButton("check_answer", "Check your answer"),
-            actionButton("next_question", "Next ..."),
-            tags$hr(),
-            textOutput("score"),
-            drillr:::hashbox("hash")
+            tags$div(
+                actionButton("check_answer", "Check your answer"),
+                actionButton("next_question", "Next ..."),
+                tags$hr(),
+                textOutput("score"),
+                drillr:::hashbox("hash"),
+                style="font-size:10pt;"
+            )
 
         ),
         mainPanel(
-            tags$span(htmlOutput("prompt_lead"), style = "font-size: 15pt;"),
-            tags$span(uiOutput("prompt"), style="font-size: 20pt;"),
-            tags$div(uiOutput("choice_buttons"), style="font-size: 15pt;")
-
+            tags$span(htmlOutput("prompt_lead"), style = "font-size: 12pt;"),
+            tags$span(uiOutput("prompt"), style="font-size: 15pt;"),
+            tags$div(uiOutput("choice_buttons"), style="font-size: 12pt;"),
+            tags$hr(),
+            tags$div(htmlOutput("feedback"), style="font-size:12pt;"),
+            tags$div(uiOutput("right_answer"), style="font-size:15pt;")
         )
 
     )
@@ -36,7 +43,19 @@ ui <- fluidPage(
 
 
 server <- function(input, output, session) {
-    Items <- rbind(Polynomials(), Greek())  # set the question items
+    Items <- eventReactive(input$quiz, {
+        correct_answer() # blank it out
+        current_feedback() # blank it out
+        show_correct_answer("") # blank it out
+        n_asked(1)
+        n_answered(0)
+        n_correct(0)
+        quiz_choices[[input$quiz]]
+      })
+    observeEvent(input$quiz, {
+        new_question() # When quiz changes, redraw the question
+      },
+      priority = 0)
     prompt <- reactiveVal("Getting started.")
     this_question <- reactiveVal(NULL)
     current_feedback <- reactiveVal("")
@@ -45,35 +64,34 @@ server <- function(input, output, session) {
     n_asked <- reactiveVal(0)
     n_answered <- reactiveVal(0)
     n_correct <- reactiveVal(0)
-    forward <- reactiveVal(TRUE)
     lead <- reactiveVal("What do you want me to do?")
     current_choices <- reactiveVal(NULL)
-    sequence <- make_sequence(nrow(Items), 100)
+    sequence <- reactive({make_sequence(nrow(Items()), 100)})
 
-    observeEvent(input$next_question,
-                 {
-                     n_asked(n_asked() + 1)
-                     k <- sequence[n_asked()]
+    observeEvent(
+        input$next_question, {
+            correct_answer("")
+            new_question()
+        }, ignoreNULL  = FALSE )
 
-                     forward(rnorm(1) > 0)
-                     this_question(
-                         frame_question(Items,
-                                    ndistractor = 5,
-                                    forward=forward(), #NOTE NOTE NOTE
-                                    k = k))
-                     # Set the instructions for the prompot
-                     lead(ifelse(forward(),
-                                 Items[k,]$forward,
-                                 Items[k,]$backward))
+    new_question <- reactive({
+        n_asked(n_asked() + 1)
+        k <- sequence()[n_asked()]
+        this_question(
+            frame_question(Items(),
+                           ndistractor = 5,
+                           k = k))
+        # Set the instructions for the prompt
+        lead(this_question()$lead)
 
+        prompt(this_question()$prompt)
+        current_choices(this_question()$choices)
+        correct_answer(this_question()$right)
+        current_feedback("waiting for your answer ...")
+        disable("next_question")
+        enable("check_answer")
+    })
 
-                     prompt(this_question()$prompt)
-                     current_choices(this_question()$choices)
-                     correct_answer(this_question()$right)
-                     current_feedback("waiting for your answer ...")
-                     disable("next_question")
-                     enable("check_answer")
-                 }, ignoreNULL  = FALSE )
 
     observeEvent(input$check_answer, {
         if (is.null(input$answer)) return()
@@ -82,11 +100,11 @@ server <- function(input, output, session) {
             current_feedback("Right!")
             show_correct_answer("")
             disable("answer")
-            disable("check_answer")
         } else {
-            current_feedback("<span style=\"color: red;\">Sorry, it's ...</span>")
+            current_feedback("<span style=\"color: red;\">Sorry, the correct answer is</span>")
             show_correct_answer(correct_answer())
         }
+        disable("check_answer")
         enable("next_question")
         n_answered(n_answered() + 1)
 
@@ -100,7 +118,7 @@ server <- function(input, output, session) {
                      choices = current_choices()
                     ))
     })
-    output$title <- renderUI(titlePanel("hello"))
+
     output$prompt <- renderUI(withMathJax(prompt()))
     output$score <- renderText(paste0("Score ", n_correct(), "/", n_answered()))
     output$feedback <- renderText(current_feedback())
@@ -109,7 +127,7 @@ server <- function(input, output, session) {
         if (n_answered() == 0) return("Ready for first question.")
         learnrhash::encode_obj(
             tibble(
-                lesson = "Greek",
+                lesson = input$quiz,
                 n_correct = n_correct(),
                 n_answered = n_answered(),
                 when = Sys.time()

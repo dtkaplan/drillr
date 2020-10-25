@@ -4,7 +4,7 @@
 \alias{Polynomials}
 \title{First derivatives}
 \usage{
-Polynomials()
+Polynomials(direction = c("forward", "both", "backward"))
 }
 \description{
 First derivatives

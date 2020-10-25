@@ -1,7 +1,8 @@
 #' First derivatives
 #'
 #' @export
-Polynomials <- function() {
+Polynomials <- function(direction = c("forward", "both", "backward")) {
+  direction <- match.arg(direction)
   tibble::tribble(
     ~ answer,  ~ group, ~ question,
     "$$\\partial_x\\,f(x) \\equiv 0$$" ,   "two",      "$$f(x) \\equiv b$$",
@@ -24,6 +25,7 @@ Polynomials <- function() {
 
     "$$\\partial_x\\,f(x) \\equiv d  $$",  "three",     "$$f(x) \\equiv dd10$$") %>%
     mutate(id = "polynomials",
+           direction = direction,
            forward = "Select the derivative",
            backward = "Select the anti-derivative")
 
