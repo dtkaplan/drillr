@@ -4,8 +4,21 @@ library(shinyjs)
 library(learnrhash)
 
 quiz_choices <- list()
+
 quiz_choices[["Greek"]] <- Greek("both")
 quiz_choices[["Derivs of Polynomials"]] <- Polynomials("forward")
+quiz_choices[["Derivs of Exponentials"]] <- Exponentials("forward")
+quiz_choices[["Derivs of Power-law"]] <- Powers("forward")
+quiz_choices[["Derivs of Sinusoids"]] <- Sinusoids("forward")
+quiz_choices[["Derivatives"]] <- rbind(Sinusoids("forward"), Powers("forward"),
+                                       Exponentials("forward"), Polynomials("forward"))
+quiz_choices[["Anti-derivs of Polynomials"]] <- Polynomials("backward")
+quiz_choices[["Anti-derivs of Exponentials"]] <- Exponentials("backward")
+quiz_choices[["Anti-derivs of Power-law"]] <- Powers("backward")
+quiz_choices[["Anti-derivs of Sinusoids"]] <- Sinusoids("backward")
+quiz_choices[["Anti-derivatives"]] <- rbind(Sinusoids("backward"), Powers("backward"),
+                                       Exponentials("backward"), Polynomials("backward"))
+quiz_choices[["Image test"]] <- Test_images("both")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -84,9 +97,9 @@ server <- function(input, output, session) {
         # Set the instructions for the prompt
         lead(this_question()$lead)
 
-        prompt(this_question()$prompt)
+        prompt(HTML(this_question()$prompt))
         current_choices(this_question()$choices)
-        correct_answer(this_question()$right)
+        correct_answer(HTML(this_question()$right))
         current_feedback("waiting for your answer ...")
         disable("next_question")
         enable("check_answer")
@@ -113,10 +126,20 @@ server <- function(input, output, session) {
     output$choice_buttons <- renderUI({
         if (is.null(current_choices())) return()
 
-        withMathJax(radioButtons("answer",  " ",
+        Tmp <- withMathJax(radioButtons("answer",  " ",
                      selected = NA,
                      choices = current_choices()
                     ))
+
+        # radioButtons() strips out internal "<" and ">", replacing them
+        # with &lt; and &gt; respectively.
+        # Undo this whereever it happens
+        Tmp <- gsub("&lt;", "<", Tmp) %>%
+          gsub("&gt;", ">", .) %>%
+          HTML(.)
+
+        3 -4
+        Tmp
     })
 
     output$prompt <- renderUI(withMathJax(prompt()))

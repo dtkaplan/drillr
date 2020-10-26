@@ -27,15 +27,14 @@ frame_question  <- function(items, ndistractor = 5, direction = "forward",
          choices = sample(c(base$question, distractors$question))
     )
   }
-  # Process character strings in tmp, e.g. to latex, as image, ...
-  res$right <- format_choices(res$right)
-  res$prompt <- format_choices(res$prompt)
-  res$choices <- format_choices(res$choices)
 
   tmp <- res$choices # still character strings
   res$choices <- as.list(tmp == res$right) # Logical vector: which choice is right
 
-  names(res$choices) <- tmp
+  # Process character strings in tmp, e.g. to latex, as image, ...
+  res$right <- format_choices(res$right)
+  res$prompt <- format_choices(res$prompt)
+  names(res$choices) <- format_choices(tmp)
 
 
   return(res)
