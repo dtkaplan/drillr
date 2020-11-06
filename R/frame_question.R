@@ -5,7 +5,9 @@ frame_question  <- function(items, ndistractor = 5, forward=TRUE,
                             k = sample(length(items), 1)) {
   base <- items[k,]
   distractors <- items[-k, ] %>%
-    filter(group == base$group, id == base$id) %>%
+    filter(group == base$group,
+           id == base$id,
+           answer  != base$answer) %>%
     sample_n(pmin(ndistractor, nrow(.)))
 
   res <- if (forward) {
