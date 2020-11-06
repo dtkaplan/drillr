@@ -7,7 +7,7 @@
 frame_question(
   items,
   ndistractor = 5,
-  forward = TRUE,
+  direction = "forward",
   k = sample(length(items), 1)
 )
 }

@@ -4,7 +4,7 @@
 \alias{Greek}
 \title{Greek letter questions}
 \usage{
-Greek()
+Greek(direction = c("forward", "both", "backward"))
 }
 \description{
 `id` field so we can lump different sources together

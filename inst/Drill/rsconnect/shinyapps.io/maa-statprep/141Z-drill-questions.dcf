@@ -1,0 +1,12 @@
+name: 141Z-drill-questions
+title: 141Z-drill-questions
+username:
+account: maa-statprep
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3093567
+bundleId: 3781612
+url: https://maa-statprep.shinyapps.io/141Z-drill-questions/
+when: 1603678144.04095
+asMultiple: FALSE
+asStatic: FALSE

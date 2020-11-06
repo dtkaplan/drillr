@@ -2,7 +2,8 @@
 #'
 #' `id` field so we can lump different sources together
 #' @export
-Greek <- function() {
+Greek <- function(direction = c("forward", "both", "backward")) {
+  direction <- match.arg(direction)
   tibble::tribble(
     ~ answer,  ~ group, ~ question,
     "alpha",  "lower", "$$\\alpha$$",
@@ -43,6 +44,7 @@ Greek <- function() {
     "Sigma",  "upper", "$$\\Sigma$$",
     "Psi",  "lower", "$$\\Psi$$",
   ) %>% mutate(id = "Greek",
+               direction = direction,
                forward = "Name the Greek letter",
                backward = "Choose the letter named")
 }
