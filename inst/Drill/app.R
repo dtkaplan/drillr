@@ -5,7 +5,8 @@ library(learnrhash)
 
 quiz_choices <- list()
 
-quiz_choices[["Greek"]] <- Greek("both")
+quiz_choices[["Quiz Derivatives"]] <- D_quiz("forward")
+quiz_choices[["Derivative structure"]] <- D_structure("forward")
 quiz_choices[["Derivs of Polynomials"]] <- Polynomials("forward")
 quiz_choices[["Derivs of Exponentials"]] <- Exponentials("forward")
 quiz_choices[["Derivs of Power-law"]] <- Powers("forward")
@@ -19,6 +20,7 @@ quiz_choices[["Anti-derivs of Sinusoids"]] <- Sinusoids("backward")
 quiz_choices[["Anti-derivatives"]] <- rbind(Sinusoids("backward"), Powers("backward"),
                                        Exponentials("backward"), Polynomials("backward"))
 quiz_choices[["Image test"]] <- Test_images("both")
+quiz_choices[["Greek"]] <- Greek("both")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(

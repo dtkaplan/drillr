@@ -5,9 +5,17 @@ frame_question  <- function(items, ndistractor = 5, direction = "forward",
                             k = sample(length(items), 1)) {
   base <- items[k,]
   distractors <- items[-k, ] %>%
-    filter(group == base$group,
-           id == base$id,
-           answer  != base$answer) %>%
+    filter(
+      # should match  the group of  the selected  item
+      group == base$group,
+      # should come from the same quiz structure
+      id == base$id,
+      # the correct  answer should be unique
+      answer  != base$answer) %>%
+    group_by(answer) %>%
+    # Delete  duplicate answers
+    filter(row_number() == 1) %>%
+    ungroup() %>%
     sample_n(pmin(ndistractor, nrow(.)))
 
   forward_direction <-

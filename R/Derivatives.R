@@ -125,3 +125,101 @@ Test_images <- function(direction = c("forward", "both", "backward")) {
            forward = "Which matches?",
            backward = "Which matches backward?")
 }
+
+#' @export
+D_structure <- function(direction = c("forward", "both", "backward")) {
+  direction <- match.arg(direction)
+  tibble::tribble(
+    ~ answer, ~ group, ~ question,
+    "0", "all","$$\\partial_x \\exp(t)$$",
+    "0", "all","$$\\partial_t \\ln(x)$$",
+    "0", "all", "$$\\partial_x  7$$",
+    "1", "all", "$$\\partial_x x$$",
+    "1", "all", "$$\\partial_y y x^3$$",
+    "1", "all", "$$\\partial_x \\exp(x) \\sin(\\omega t)$$",
+    "fundamental", "all", "$$\\partial_x 7x$$",
+    "fundamental", "all", "$$\\partial_y x \\exp(y)$$",
+    "fundamental", "all","$$\\partial_t  \\exp(t)$$",
+    "fundamental", "all", "$$\\partial_x \\exp(t)  \\sin(x)$$",
+    "fundamental", "all","$$\\partial_t \\sin(t)$$",
+    "fundamental", "all","$$\\partial_x x^n (n\\neq 0)",
+    "fundamental", "all","$$\\partial_x \\ln(x)$$",
+    "fundamental", "all", "$$\\partial_x \\mbox{sigmoid}(x, center, width)$$",
+    "scaled fundamental", "all",  "$$\\partial_t \\exp(kt)$$",
+    "scaled fundamental", "all", "$$\\partial_t \\sin(2\\pi t/P)$$",
+    "scaled fundamental",  "all", "$$\\partial_x \\mbox{sigmoid}(4 x, center, width)$$",
+    "scaled fundamental", "all", "$$\\partial_t \\sin(\\omega t)$$",
+    "product", "all", "$$\\partial_x \\exp(x) \\sin(ax)$$",
+    "product", "all", "$$\\partial_t \\sin(\\omega t)\\cos(\\alpha t)$$",
+    "product", "all", "$$\\partial_x x^3  \\sin(k x)$$",
+    "product", "all", "$$\\partial_x sin(\\omega x) \\ln(x)$$",
+    "product", "all", "$$\\partial_x x \\exp(x)$$",
+    "product", "all", "$$\\partial_x (x^2  + 1)  \\exp(kx)$$",
+    "product", "all", "$$\\partial_t x \\cos(t) \\sin(\\omega t)$$",
+    "quotient", "all", "$$\\partial_x sin(x)/cos(x)$$",
+    "chain",  "all",  "$$\\partial_x \\sin(x^2)$$",
+    "chain",  "all",  "$$\\partial_x \\ln(x^2 + x)$$",
+    "linear combination", "all", "$$\\partial_x (x + 3)$$",
+    "linear combination", "all", "$$\\partial_x (a_0 + a_1 x + a_2 x^2)$$",
+    "linear combination", "all", "$$\\partial_x (2 x^2 - sin(\\omega x))$$",
+    "$$g(x) \\partial_x f(x) + f(x) \\partial_x g(x)$$", "rule", "$$\\partial_x \\left[f(x) g(x)\\right]$$",
+    "$$g(x) \\partial_x f(x) + \\partial_x g(x)$$", "rule", "$$\\partial_x \\left[f(x) + g(x)\\right]$$",
+    "$$g(x) f'(g(x)) g'(x)$$", "rule", "$$\\partial_x f(g(x))$$",
+    "$$g(x) a f'(a g(x)) g'(a x)$$", "rule", "$$\\partial_x f(a  g(x))$$",
+    "$$g(x) g'(f(x)) f'(x)$$", "rule", "$$\\partial_x g(f(x))$$",
+    "$$g(x) a f'(a x)$$", "rule", "$$\\partial_x f(a x + b) $$",
+    "$$g(x) a \\partial_x f(x) + b \\partial_x g(x)$$", "rule", "$$\\partial_x \\left[a f(x) + b g(x)\\right]$$",
+    "$$g(x) b \\partial_x f(x) + a \\partial_x g(x)$$", "rule", "$\\partial_x \\left[b f(x) + a g(x)\\right]$$",
+
+    ) %>%
+    mutate(id = "structure",
+           direction = direction,
+           forward = "Which structure matches the function?",
+           backward = "Which  function  matches the structure?")
+}
+
+
+#' @export
+#' @export
+D_quiz <- function(direction = c("forward", "both", "backward")) {
+  direction <- match.arg(direction)
+  tibble::tribble(
+    ~ answer, ~ group, ~ question,
+    "$$7 \\cos(x) - 2/x$$", "quizx1",
+         "$$\\partial_x   \\left[ 7 \\sin(x) - 2 \\ln(x)\\right]$$",
+    "$$7 \\cos(7x) - 1/x$$", "quizx1",
+         "$$\\partial_x   \\left[ \\sin(7 x) -  \\ln(2 x)\\right]$$",
+    "$$7 \\cos(7x) - 1/x $$", "quizx1", "$$\\partial_x   \\left[ \\sin(7 x) -  \\ln(x/2)\\right]$$",
+    "$$7 \\cos(x) - 2/x $$", "quizx1",  "$$\\partial_x \\left[7 \\sin(x) -  2 \\ln(x/2)\\right]$$",
+    "$$-4 \\sqrt{6}  / x^5$$", "quizx2", "$$\\partial_x \\left[ \\sqrt{6} / x^4  \\right]$$",
+    "$$4 \\sqrt{6}  / x^5$$", "quizx2", "$$\\partial_x \\left[ - \\sqrt{6} / x^4  \\right]$$",
+    "$$4 \\sqrt{6} / x^4$$", "quizx2", "$$\\partial_x \\left[ -(4/3) \\sqrt{6} / x^3\\right]$$",
+    "$$4 \\sqrt{6} / x^6$$", "quizx2",
+         "$$\\partial_x \\left[ -(4/5) \\sqrt{6} / x^5\\right]$$",
+     "$$\\log(4)\\log(3) 4^x$$" ,  "quizx3", "$$\\partial_x \\log(3) 4^x$$",
+     "$$\\log(4)\\log(3) 3^x$$", "quizx3",  "$$\\partial_x \\log(4) 3^x$$",
+     "$$3 \\log(4) x^2$$", "quizx3",    "$$\\partial_x \\log(4) x^3$$",
+    "$$4 \\log(3) x^3$$", "quizx3",    "$$\\partial_x \\log(3) x^4$$",
+    "$$- 75 \\sin(x)$$",  "quizx4",  "$$\\partial_x \\left[75 \\cos(x)  \\right]$$",
+    "$$75 \\cos(x)$$",  "quizx4",  "$$\\partial_x \\left[75 \\sin(x)  \\right]$$",
+    "$$75 \\sin(x)$$",  "quizx4",  "$$\\partial_x \\left[- 75 \\cos(x)\\right]$$",
+    "$$-75 \\cos(x)$$",  "quizx4",  "$$\\partial_x \\left[- 75 \\sin(x)\\right]$$",
+    "$$- 75 \\sin(75 x)$$",  "quizx4",  "$$\\partial_x \\left[\\cos(75 x)  \\right]$$",
+    "$$75 \\cos(75 x)$$",  "quizx4",  "$$\\partial_x \\left[\\sin(75 x)  \\right]$$",
+    "$$75 \\sin(75 x)$$",  "quizx4",  "$$\\partial_x \\left[-\\cos(75 x)\\right]$$",
+    "$$-75 \\cos(75 x)$$",  "quizx4",  "$$\\partial_x \\left[-\\sin(75 x)\\right]$$",
+    "$$2 - (1/9)/x^2  $$", "quizx5", "$$\\partial_x\\left[2 x + 1/(9x)\\right]$$",
+    "$$2 + (1/9)/x^2  $$", "quizx5", "$$\\partial_x\\left[2 x - 1/(9x)\\right]$$",
+    "$$2x$$", "quizx5", "$$\\partial_x\\left[x^2 + 1/(9k)\\right]$$",
+    "$$2x + 9  $$", "quizx5", "$$\\partial_x\\left[x^2 + 9x\\right]$$",
+    "$$\\log(2) 2^x - (1/9)/x^2$$", "quizx5", "$$\\partial_x\\left[2^x + 1/(9x)\\right]$$",
+    "$$\\log(2) 2^x + (1/9)/x^2$$", "quizx5", "$$\\partial_x\\left[2^x - 1/(9x)\\right]$$",
+    "$$2x  - (1/81)/x^2$$", "quizx5", "$$\\partial_x\\left[x^2 +  1/(81 x)\\right]$$",
+    "$$2x - (1/3)/x^{3}  $$", "quizx5", "$$\\partial_x\\left[2 x + 1/(3x)^2\\right]$$",
+
+  ) %>%
+    mutate(id = "quiz_practice",
+           direction = direction,
+           forward = "Which is the derivative of the function?",
+           backward = "Which is an anti-derivative of the function?")
+}
