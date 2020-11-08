@@ -23,37 +23,31 @@ quiz_choices[["Image test"]] <- Test_images("both")
 quiz_choices[["Greek"]] <- Greek("both")
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui <- tagList(
     useShinyjs(),
     withMathJax(),
     # Application title
-    titlePanel("141Z Drill"),
 
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            selectInput("quiz", "Choose quiz:", choices = names(quiz_choices)),
-
-            tags$div(
-                actionButton("check_answer", "Check your answer"),
-                actionButton("next_question", "Next ..."),
-                tags$hr(),
-                textOutput("score"),
-                drillr:::hashbox("hash"),
-                style="font-size:10pt;"
-            )
-
-        ),
-        mainPanel(
-            tags$span(htmlOutput("prompt_lead"), style = "font-size: 12pt;"),
-            tags$span(uiOutput("prompt"), style="font-size: 15pt;"),
-            tags$div(uiOutput("choice_buttons"), style="font-size: 12pt;"),
+    tagList(
+        selectInput("quiz", "Choose quiz:", choices = names(quiz_choices)),
+        tags$span(htmlOutput("prompt_lead"), style = "font-size: 12pt;"),
+        tags$span(uiOutput("prompt"), style="font-size: 15pt;"),
+        tags$div(uiOutput("choice_buttons"), style="font-size: 12pt;"),
+        tags$hr(),
+        tags$div(htmlOutput("feedback"), style="font-size:12pt;"),
+        tags$div(uiOutput("right_answer"), style="font-size:15pt;"),
+        tags$div(
+            #actionButton("check_answer", "Check your answer"),
+            actionButton("next_question", "Next ..."),
             tags$hr(),
-            tags$div(htmlOutput("feedback"), style="font-size:12pt;"),
-            tags$div(uiOutput("right_answer"), style="font-size:15pt;")
+            textOutput("score"),
+            tags$div(
+                drillr:::hashbox("hash"),
+                style="font-size:6pt;"
+            )
         )
-
     )
+
 )
 
 
@@ -102,25 +96,37 @@ server <- function(input, output, session) {
         prompt(HTML(this_question()$prompt))
         current_choices(this_question()$choices)
         correct_answer(HTML(this_question()$right))
-        current_feedback("waiting for your answer ...")
+        current_feedback("")
+        updateActionButton(session, "next_question",
+                           label = "Waiting for your answer")
         disable("next_question")
-        enable("check_answer")
+        #enable("check_answer")
     })
 
+    observeEvent(input$next_question, {
+        show_correct_answer("")
+    })
 
-    observeEvent(input$check_answer, {
-        if (is.null(input$answer)) return()
+    # observeEvent(input$check_answer, {
+    #     if (is.null(input$answer)) return()
+    observeEvent(input$answer, {
         if (input$answer) {
             n_correct(n_correct() + 1)
-            current_feedback("Right!")
+            current_feedback("")
             show_correct_answer("")
-            disable("answer")
+            updateActionButton(session, "next_question",
+                               label = "<span  style=\"color: green;\">Right!</span> Press to go to next question.")
+
         } else {
             current_feedback("<span style=\"color: red;\">Sorry, the correct answer is</span>")
             show_correct_answer(correct_answer())
+            updateActionButton(session, "next_question",
+                               label = "Next")
         }
-        disable("check_answer")
+        disable("answer")
+
         enable("next_question")
+
         n_answered(n_answered() + 1)
 
     })
